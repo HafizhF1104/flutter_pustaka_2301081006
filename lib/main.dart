@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pustaka/pages/home_page.dart';
 import 'package:flutter_pustaka/screens/tampilan_awal.dart';
 
 void main() {
@@ -14,10 +15,9 @@ class AppPustaka extends StatelessWidget {
     return MaterialApp(
       title: 'Aplikasi Pustaka',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
+        primaryColor: Colors.blue,
       ),
-      home: TampilanAwal(),
+      home: HomePage(),
     );
   }
 }

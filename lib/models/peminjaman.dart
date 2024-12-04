@@ -1,15 +1,15 @@
 class Peminjaman {
   int? id;
-  String tanggal_pinjam;
-  String tanggal_kembali;
-  int anggota_id;
-  int buku_id;
+  String tanggalPinjam;
+  String tanggalKembali;
+  int anggotaId;
+  int bukuId;
 
   Peminjaman({
     this.id,
-    required this.tanggal_pinjam,
-    required this.tanggal_kembali,
-    required this.anggota_id,
-    required this.buku_id,
+    required this.tanggalPinjam,
+    required this.tanggalKembali,
+    required this.anggotaId,
+    required this.bukuId,
   });
 }

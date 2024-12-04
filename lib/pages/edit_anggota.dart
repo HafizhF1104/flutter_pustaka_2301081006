@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 
-class FormAnggota extends StatefulWidget {
-  FormAnggota({Key? key}) : super(key: key);
+class EditAnggota extends StatefulWidget {
+  final Map ListData;
+  EditAnggota({Key? key, required this.ListData}) : super(key: key);
 
   @override
-  State<FormAnggota> createState() => _FormAnggotaState();
+  State<EditAnggota> createState() => _EditAnggotaState();
 }
 
-class _FormAnggotaState extends State<FormAnggota> {
+class _EditAnggotaState extends State<EditAnggota> {
   final formKey = GlobalKey<FormState>();
+  TextEditingController id = TextEditingController();
   TextEditingController nim = TextEditingController();
   TextEditingController nama = TextEditingController();
   TextEditingController alamat = TextEditingController();
@@ -19,11 +21,12 @@ class _FormAnggotaState extends State<FormAnggota> {
 
   List<String> jenisKelaminOptions = ['Laki-laki', 'Perempuan'];
 
-  Future _simpan() async {
+  Future _update() async {
     final response = await http.post(
       Uri.parse(
-          "http://localhost/pustaka_2301081006/proses_anggota.php?aksi=insert"),
+          "http://localhost/pustaka_2301081006/proses_anggota.php?aksi=edit"),
       body: {
+        "id": id.text,
         "nim": nim.text,
         "nama": nama.text,
         "jenis_kelamin": jenisKelamin!,
@@ -38,9 +41,14 @@ class _FormAnggotaState extends State<FormAnggota> {
 
   @override
   Widget build(BuildContext context) {
+    id.text = widget.ListData['id'];
+    nim.text = widget.ListData['nim'];
+    nama.text = widget.ListData['nama'];
+    jenisKelamin = widget.ListData['jenis_kelamin'];
+    alamat.text = widget.ListData['alamat'];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah Anggota'),
+        title: Text('Edit Anggota'),
         backgroundColor: Color(0xFFFFB74D),
       ),
       backgroundColor: Color(0xFFFFF3E0),
@@ -143,15 +151,15 @@ class _FormAnggotaState extends State<FormAnggota> {
                 ),
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
-                    _simpan().then((value) {
+                    _update().then((value) {
                       if (value) {
                         final snackBar = SnackBar(
-                          content: const Text('Anggota Berhasil Ditambahkan'),
+                          content: const Text('Data Berhasil di Update'),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       } else {
                         final snackBar = SnackBar(
-                          content: const Text('Gagal Menambahkan Anggota'),
+                          content: const Text('Data Gagal di Update'),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
@@ -160,7 +168,7 @@ class _FormAnggotaState extends State<FormAnggota> {
                   }
                 },
                 child: Text(
-                  "Simpan",
+                  "Update",
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,

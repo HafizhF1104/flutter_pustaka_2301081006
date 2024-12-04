@@ -1,15 +1,15 @@
 class Pengembalian {
   int? id;
-  String tanggal_dikembalikan;
+  String tanggalDikembalikan;
   int terlambat;
   int denda;
-  int peminjaman_id;
+  int peminjamanId;
 
   Pengembalian({
     this.id,
-    required this.tanggal_dikembalikan,
+    required this.tanggalDikembalikan,
     required this.terlambat,
     required this.denda,
-    required this.peminjaman_id,
+    required this.peminjamanId,
   });
 }

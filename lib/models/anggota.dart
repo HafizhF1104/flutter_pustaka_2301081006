@@ -3,13 +3,13 @@ class Anggota {
   String nim;
   String nama;
   String alamat;
-  String jenis_kelamin;
+  String jenisKelamin;
 
   Anggota({
     this.id,
     required this.nim,
     required this.nama,
     required this.alamat,
-    required this.jenis_kelamin,
+    required this.jenisKelamin,
   });
 }

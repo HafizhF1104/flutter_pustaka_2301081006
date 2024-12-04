@@ -3,13 +3,13 @@ class Buku {
   String judul;
   String pengarang;
   String penerbit;
-  String tahun_terbit;
+  String tahunTerbit;
 
   Buku({
     this.id,
     required this.judul,
     required this.pengarang,
     required this.penerbit,
-    required this.tahun_terbit,
+    required this.tahunTerbit,
   });
 }
