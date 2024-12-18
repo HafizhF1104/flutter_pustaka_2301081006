@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_pustaka/pages/home_page.dart';
+import 'package:flutter_pustaka/pages/login_page.dart';
 import 'package:flutter_pustaka/screens/tampilan_awal.dart';
 
 void main() {
@@ -17,7 +18,7 @@ class AppPustaka extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.blue,
       ),
-      home: HomePage(),
+      home: TampilanAwal(),
     );
   }
 }

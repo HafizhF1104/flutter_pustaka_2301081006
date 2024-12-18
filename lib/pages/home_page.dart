@@ -74,7 +74,7 @@ class HomePage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         elevation: 2,
                         shadowColor: Colors.grey,
-                        backgroundColor: Colors.white, // Warna latar tombol
+                        backgroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(2),
                         ),

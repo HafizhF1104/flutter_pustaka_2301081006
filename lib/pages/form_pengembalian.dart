@@ -13,13 +13,13 @@ class FormPengembalian extends StatefulWidget {
 
 class _FormPengembalianState extends State<FormPengembalian> {
   final formKey = GlobalKey<FormState>();
-  TextEditingController tanggalPinjam = TextEditingController();
-  TextEditingController tanggalKembali = TextEditingController();
+  TextEditingController tanggalDikembalikan = TextEditingController();
+  TextEditingController terlambat = TextEditingController();
+  TextEditingController denda = TextEditingController();
 
-  List<Map<String, dynamic>> anggotaList = [];
-  List<Map<String, dynamic>> bukuList = [];
-  String? selectedAnggota;
+  List<Map<String, dynamic>> PeminjamanList = [];
   String? selectedBuku;
+  String? tanggalPinjam;
 
   Future _selectDate(
       BuildContext context, TextEditingController controller) async {
@@ -34,18 +34,42 @@ class _FormPengembalianState extends State<FormPengembalian> {
       setState(() {
         controller.text = "${selectedDate.toLocal()}".split(' ')[0];
       });
+      _kalkulasi();
+    }
+  }
+
+  void _kalkulasi() {
+    if (tanggalPinjam != null && tanggalDikembalikan.text.isNotEmpty) {
+      DateTime tanggalPinjamDate = DateTime.parse(tanggalPinjam!);
+      DateTime tanggalKembaliDate = DateTime.parse(tanggalDikembalikan.text);
+
+      int difference = tanggalKembaliDate.difference(tanggalPinjamDate).inDays;
+
+      // Jika terlambat, hitung denda
+      if (difference > 0) {
+        setState(() {
+          terlambat.text = difference.toString();
+          denda.text = (difference * 5000).toString();
+        });
+      } else {
+        // Tidak ada keterlambatan
+        setState(() {
+          terlambat.text = "0";
+          denda.text = "0";
+        });
+      }
     }
   }
 
   Future _simpan() async {
     final response = await http.post(
       Uri.parse(
-          "http://localhost/pustaka_2301081006/proses_peminjaman.php?aksi=insert"),
+          "http://localhost/pustaka_2301081006/proses_pengembalian.php?aksi=insert"),
       body: {
-        "tanggal_pinjam": tanggalPinjam.text,
-        "tanggal_kembali": tanggalKembali.text,
-        "id_anggota": selectedAnggota,
-        "id_buku": selectedBuku,
+        "tanggal_dikembalikan": tanggalDikembalikan.text,
+        "terlambat": terlambat.text,
+        "denda": denda.text,
+        "id_peminjaman": selectedBuku,
       },
     );
     if (response.statusCode == 200) {
@@ -57,22 +81,12 @@ class _FormPengembalianState extends State<FormPengembalian> {
   Future _fetchData() async {
     try {
       // Fetch anggota
-      final anggotaResponse = await http.get(Uri.parse(
-          "http://localhost/pustaka_2301081006/read.php?table=anggota"));
-      if (anggotaResponse.statusCode == 200) {
+      final peminjamanResponse = await http.get(Uri.parse(
+          "http://localhost/pustaka_2301081006/read.php?table=peminjaman"));
+      if (peminjamanResponse.statusCode == 200) {
         setState(() {
-          anggotaList = List<Map<String, dynamic>>.from(
-              json.decode(anggotaResponse.body));
-        });
-      }
-
-      // Fetch buku
-      final bukuResponse = await http.get(
-          Uri.parse("http://localhost/pustaka_2301081006/read.php?table=buku"));
-      if (bukuResponse.statusCode == 200) {
-        setState(() {
-          bukuList =
-              List<Map<String, dynamic>>.from(json.decode(bukuResponse.body));
+          PeminjamanList = List<Map<String, dynamic>>.from(
+              json.decode(peminjamanResponse.body));
         });
       }
     } catch (e) {
@@ -90,7 +104,7 @@ class _FormPengembalianState extends State<FormPengembalian> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pinjam Buku'),
+        title: Text('Form Pengembalian'),
         backgroundColor: Color(0xFFFFB74D),
       ),
       backgroundColor: Color(0xFFFFF3E0),
@@ -100,96 +114,28 @@ class _FormPengembalianState extends State<FormPengembalian> {
           padding: EdgeInsets.all(30),
           child: Column(
             children: [
-              TextFormField(
-                onTap: () => _selectDate(context, tanggalPinjam),
-                controller: tanggalPinjam,
-                readOnly: true,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  labelText: "Tanggal Pinjam",
-                  suffixIcon: Icon(Icons.calendar_month),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Tanggal Pinjam Tidak Boleh Kosong";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                onTap: () => _selectDate(context, tanggalKembali),
-                controller: tanggalKembali,
-                readOnly: true,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  labelText: "Tanggal Kembali",
-                  suffixIcon: Icon(Icons.calendar_month),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Tanggal Kembali Tidak Boleh Kosong";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 10),
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   fillColor: Colors.white,
                   filled: true,
-                  labelText: "Pilih Anggota",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                value: selectedAnggota,
-                items: anggotaList.map((anggota) {
-                  return DropdownMenuItem<String>(
-                    value: anggota['id'],
-                    child: Text(anggota['nama']),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedAnggota = value;
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Anggota Tidak Boleh Kosong";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  labelText: "Pilih Buku",
+                  labelText: "Pilih Buku Yang Dikembalikan",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 value: selectedBuku,
-                items: bukuList.map((buku) {
+                items: PeminjamanList.map((buku) {
                   return DropdownMenuItem<String>(
                     value: buku['id'],
-                    child: Text(buku['judul']),
+                    child: Text(buku['judul_buku']),
                   );
                 }).toList(),
                 onChanged: (value) {
                   setState(() {
                     selectedBuku = value;
+                    tanggalPinjam = PeminjamanList.firstWhere(
+                        (buku) => buku['id'] == value)['tanggal_pinjam'];
+                    _kalkulasi();
                   });
                 },
                 validator: (value) {
@@ -198,6 +144,53 @@ class _FormPengembalianState extends State<FormPengembalian> {
                   }
                   return null;
                 },
+              ),
+              SizedBox(height: 10),
+              TextFormField(
+                onTap: () => _selectDate(context, tanggalDikembalikan),
+                controller: tanggalDikembalikan,
+                readOnly: true,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  labelText: "Tanggal Dikembalikan",
+                  suffixIcon: Icon(Icons.calendar_month),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return "Tanggal Dikembalikan Tidak Boleh Kosong";
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: terlambat,
+                readOnly: true,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  labelText: "Terlambat (Hari)",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: denda,
+                readOnly: true,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  labelText: "Denda (Rp)",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
               ),
               SizedBox(height: 50),
               ElevatedButton(

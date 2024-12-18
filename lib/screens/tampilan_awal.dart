@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pustaka/pages/login_page.dart';
 
 import '../pages/home_page.dart';
 
@@ -6,7 +7,7 @@ class TampilanAwal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFF3E0), // Warna latar belakang
+      backgroundColor: Color(0xFFFFF3E0),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -19,29 +20,29 @@ class TampilanAwal extends StatelessWidget {
             ),
             SizedBox(height: 250),
             Padding(
-              padding: EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.all(30.0),
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) {
-                        return HomePage();
+                        return LoginPage();
                       },
                     ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFFFB74D), // Warna latar tombol
+                  backgroundColor: Color(0xFFFFB74D),
+                  minimumSize: Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 120, vertical: 15),
                 ),
                 child: Text(
                   'Login',
                   style: TextStyle(
-                    color: Colors.black, // Warna teks
-                    fontSize: 20,
+                    color: Colors.black,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
