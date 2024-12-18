@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_pustaka/pages/login_page.dart';
 
-import '../pages/home_page.dart';
-
 class TampilanAwal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
